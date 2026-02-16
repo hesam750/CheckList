@@ -22,8 +22,11 @@ export default function NewStoppagePage() {
   const [selectedLine, setSelectedLine] = useState("")
   const [selectedMachine, setSelectedMachine] = useState("")
   const [selectedShift, setSelectedShift] = useState("")
-  const [startTime, setStartTime] = useState("")
-  const [endTime, setEndTime] = useState("")
+  const [stoppageCode, setStoppageCode] = useState("")
+  const [startDate, setStartDate] = useState("")
+  const [startClock, setStartClock] = useState("")
+  const [endDate, setEndDate] = useState("")
+  const [endClock, setEndClock] = useState("")
   const [stoppageType, setStoppageType] = useState("")
   const [cause, setCause] = useState("")
   const [description, setDescription] = useState("")
@@ -43,12 +46,24 @@ export default function NewStoppagePage() {
     setSelectedLine("")
     setSelectedMachine("")
     setSelectedShift("")
-    setStartTime("")
-    setEndTime("")
+    setStoppageCode("")
+    setStartDate("")
+    setStartClock("")
+    setEndDate("")
+    setEndClock("")
     setStoppageType("")
     setCause("")
     setDescription("")
   }
+
+  const durationMinutes = (() => {
+    if (!startDate || !startClock || !endDate || !endClock) return ""
+    const start = new Date(`${startDate}T${startClock}`)
+    const end = new Date(`${endDate}T${endClock}`)
+    if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) return ""
+    if (end < start) return ""
+    return Math.round((end.getTime() - start.getTime()) / 60000).toString()
+  })()
 
   return (
     <AppLayout>
@@ -136,27 +151,70 @@ export default function NewStoppagePage() {
                 <CardTitle className="text-base font-semibold text-card-foreground">اطلاعات زمان و علت</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label className="text-card-foreground">کد توقف</Label>
+                  <Input
+                    value={stoppageCode}
+                    onChange={(e) => setStoppageCode(e.target.value)}
+                    className="bg-secondary text-secondary-foreground"
+                    placeholder="کد توقف را وارد کنید"
+                  />
+                </div>
+
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label className="text-card-foreground">زمان شروع</Label>
+                    <Label className="text-card-foreground">تاریخ توقف</Label>
                     <Input
-                      type="datetime-local"
-                      value={startTime}
-                      onChange={(e) => setStartTime(e.target.value)}
+                      type="date"
+                      value={startDate}
+                      onChange={(e) => setStartDate(e.target.value)}
                       className="bg-secondary text-secondary-foreground"
                       dir="ltr"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-card-foreground">زمان پایان</Label>
+                    <Label className="text-card-foreground">زمان شروع توقف</Label>
                     <Input
-                      type="datetime-local"
-                      value={endTime}
-                      onChange={(e) => setEndTime(e.target.value)}
+                      type="time"
+                      value={startClock}
+                      onChange={(e) => setStartClock(e.target.value)}
                       className="bg-secondary text-secondary-foreground"
                       dir="ltr"
                     />
                   </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label className="text-card-foreground">تاریخ پایان توقف</Label>
+                    <Input
+                      type="date"
+                      value={endDate}
+                      onChange={(e) => setEndDate(e.target.value)}
+                      className="bg-secondary text-secondary-foreground"
+                      dir="ltr"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-card-foreground">زمان پایان توقف</Label>
+                    <Input
+                      type="time"
+                      value={endClock}
+                      onChange={(e) => setEndClock(e.target.value)}
+                      className="bg-secondary text-secondary-foreground"
+                      dir="ltr"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-card-foreground">مدت توقف (دقیقه)</Label>
+                  <Input
+                    value={durationMinutes}
+                    readOnly
+                    className="bg-secondary text-secondary-foreground"
+                    dir="ltr"
+                  />
                 </div>
 
                 <div className="space-y-2">

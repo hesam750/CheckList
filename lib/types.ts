@@ -12,12 +12,18 @@ export type StoppageStatus = "pending_supervisor" | "pending_inspector" | "appro
 
 export interface Stoppage {
   id: string
+  code?: string
   unit: string
   line: string
   machine: string
   shift: string
+  startDate?: string
+  startClock?: string
   startTime: string
+  endDate?: string
+  endClock?: string
   endTime: string
+  durationMinutes?: number
   type: string
   cause: string
   description: string
