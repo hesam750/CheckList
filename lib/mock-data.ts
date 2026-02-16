@@ -1,0 +1,275 @@
+import type { Stoppage, Unit, KPIData } from "./types"
+
+export const units: Unit[] = [
+  {
+    id: "u1",
+    name: "واحد تولید ۱",
+    lines: [
+      {
+        id: "l1",
+        name: "خط تولید A",
+        unitId: "u1",
+        machines: [
+          { id: "m1", name: "دستگاه پرس ۱", lineId: "l1", mtbfTarget: 120, mttrTarget: 30 },
+          { id: "m2", name: "دستگاه برش ۱", lineId: "l1", mtbfTarget: 150, mttrTarget: 25 },
+          { id: "m3", name: "دستگاه جوش ۱", lineId: "l1", mtbfTarget: 200, mttrTarget: 45 },
+        ],
+      },
+      {
+        id: "l2",
+        name: "خط تولید B",
+        unitId: "u1",
+        machines: [
+          { id: "m4", name: "دستگاه پرس ۲", lineId: "l2", mtbfTarget: 130, mttrTarget: 35 },
+          { id: "m5", name: "دستگاه CNC ۱", lineId: "l2", mtbfTarget: 180, mttrTarget: 50 },
+        ],
+      },
+    ],
+  },
+  {
+    id: "u2",
+    name: "واحد تولید ۲",
+    lines: [
+      {
+        id: "l3",
+        name: "خط تولید C",
+        unitId: "u2",
+        machines: [
+          { id: "m6", name: "دستگاه بسته‌بندی ۱", lineId: "l3", mtbfTarget: 100, mttrTarget: 20 },
+          { id: "m7", name: "دستگاه لیبل‌زن ۱", lineId: "l3", mtbfTarget: 90, mttrTarget: 15 },
+        ],
+      },
+      {
+        id: "l4",
+        name: "خط تولید D",
+        unitId: "u2",
+        machines: [
+          { id: "m8", name: "دستگاه مونتاژ ۱", lineId: "l4", mtbfTarget: 160, mttrTarget: 40 },
+        ],
+      },
+    ],
+  },
+  {
+    id: "u3",
+    name: "واحد تولید ۳",
+    lines: [
+      {
+        id: "l5",
+        name: "خط تولید E",
+        unitId: "u3",
+        machines: [
+          { id: "m9", name: "دستگاه رنگ ۱", lineId: "l5", mtbfTarget: 110, mttrTarget: 35 },
+          { id: "m10", name: "دستگاه خشک‌کن ۱", lineId: "l5", mtbfTarget: 140, mttrTarget: 25 },
+        ],
+      },
+    ],
+  },
+]
+
+export const stoppageTypes = [
+  "خرابی مکانیکی",
+  "خرابی الکتریکی",
+  "خرابی نرم‌افزاری",
+  "کمبود مواد اولیه",
+  "تعمیرات پیشگیرانه",
+  "تنظیمات و راه‌اندازی",
+  "عوامل انسانی",
+  "قطع برق",
+  "سایر",
+]
+
+export const stoppageCauses = [
+  "فرسودگی قطعات",
+  "عدم تعمیرات به‌موقع",
+  "خطای اپراتور",
+  "کیفیت پایین مواد اولیه",
+  "نقص فنی",
+  "شرایط محیطی",
+  "عدم آموزش کافی",
+  "طراحی نامناسب",
+  "سایر",
+]
+
+export const shifts = ["صبح", "عصر", "شب"]
+
+export const mockStoppages: Stoppage[] = [
+  {
+    id: "s1",
+    unit: "واحد تولید ۱",
+    line: "خط تولید A",
+    machine: "دستگاه پرس ۱",
+    shift: "صبح",
+    startTime: "1404/11/15 08:30",
+    endTime: "1404/11/15 09:45",
+    type: "خرابی مکانیکی",
+    cause: "فرسودگی قطعات",
+    description: "شکستن فک پرس و نیاز به تعویض",
+    status: "pending_supervisor",
+    createdBy: "علی احمدی",
+    createdAt: "1404/11/15 09:50",
+  },
+  {
+    id: "s2",
+    unit: "واحد تولید ۱",
+    line: "خط تولید B",
+    machine: "دستگاه CNC ۱",
+    shift: "عصر",
+    startTime: "1404/11/14 14:00",
+    endTime: "1404/11/14 15:30",
+    type: "خرابی نرم‌افزاری",
+    cause: "نقص فنی",
+    description: "هنگ کردن سیستم کنترل CNC",
+    status: "pending_inspector",
+    createdBy: "محمد رضایی",
+    createdAt: "1404/11/14 15:35",
+    supervisorApproval: { by: "حسن محمدی", at: "1404/11/14 16:00" },
+  },
+  {
+    id: "s3",
+    unit: "واحد تولید ۲",
+    line: "خط تولید C",
+    machine: "دستگاه بسته‌بندی ۱",
+    shift: "صبح",
+    startTime: "1404/11/13 10:00",
+    endTime: "1404/11/13 10:45",
+    type: "کمبود مواد اولیه",
+    cause: "کیفیت پایین مواد اولیه",
+    description: "اتمام فیلم بسته‌بندی",
+    status: "approved",
+    createdBy: "رضا کریمی",
+    createdAt: "1404/11/13 10:50",
+    supervisorApproval: { by: "حسن محمدی", at: "1404/11/13 11:00" },
+    inspectorApproval: { by: "مهدی نوری", at: "1404/11/13 11:30" },
+  },
+  {
+    id: "s4",
+    unit: "واحد تولید ۲",
+    line: "خط تولید D",
+    machine: "دستگاه مونتاژ ۱",
+    shift: "شب",
+    startTime: "1404/11/12 22:00",
+    endTime: "1404/11/12 23:15",
+    type: "خرابی الکتریکی",
+    cause: "عدم تعمیرات به‌موقع",
+    description: "سوختن موتور اصلی دستگاه",
+    status: "approved",
+    createdBy: "علی احمدی",
+    createdAt: "1404/11/12 23:20",
+    supervisorApproval: { by: "حسن محمدی", at: "1404/11/13 07:00" },
+    inspectorApproval: { by: "مهدی نوری", at: "1404/11/13 08:00" },
+  },
+  {
+    id: "s5",
+    unit: "واحد تولید ۳",
+    line: "خط تولید E",
+    machine: "دستگاه رنگ ۱",
+    shift: "صبح",
+    startTime: "1404/11/11 09:00",
+    endTime: "1404/11/11 11:30",
+    type: "تعمیرات پیشگیرانه",
+    cause: "فرسودگی قطعات",
+    description: "تعویض نازل‌های پاشش رنگ",
+    status: "rejected",
+    createdBy: "محمد رضایی",
+    createdAt: "1404/11/11 11:35",
+    supervisorApproval: { by: "حسن محمدی", at: "1404/11/11 12:00", note: "اطلاعات ناقص" },
+  },
+  {
+    id: "s6",
+    unit: "واحد تولید ۱",
+    line: "خط تولید A",
+    machine: "دستگاه برش ۱",
+    shift: "عصر",
+    startTime: "1404/11/10 15:30",
+    endTime: "1404/11/10 16:00",
+    type: "عوامل انسانی",
+    cause: "خطای اپراتور",
+    description: "تنظیم نادرست پارامترهای برش",
+    status: "pending_supervisor",
+    createdBy: "رضا کریمی",
+    createdAt: "1404/11/10 16:05",
+  },
+  {
+    id: "s7",
+    unit: "واحد تولید ۱",
+    line: "خط تولید A",
+    machine: "دستگاه جوش ۱",
+    shift: "صبح",
+    startTime: "1404/11/09 07:30",
+    endTime: "1404/11/09 08:45",
+    type: "قطع برق",
+    cause: "شرایط محیطی",
+    description: "قطع برق ناگهانی سالن",
+    status: "approved",
+    createdBy: "علی احمدی",
+    createdAt: "1404/11/09 08:50",
+    supervisorApproval: { by: "حسن محمدی", at: "1404/11/09 09:00" },
+    inspectorApproval: { by: "مهدی نوری", at: "1404/11/09 09:30" },
+  },
+  {
+    id: "s8",
+    unit: "واحد تولید ۲",
+    line: "خط تولید C",
+    machine: "دستگاه لیبل‌زن ۱",
+    shift: "عصر",
+    startTime: "1404/11/08 13:00",
+    endTime: "1404/11/08 13:45",
+    type: "خرابی مکانیکی",
+    cause: "فرسودگی قطعات",
+    description: "خرابی رولر انتقال لیبل",
+    status: "pending_inspector",
+    createdBy: "محمد رضایی",
+    createdAt: "1404/11/08 13:50",
+    supervisorApproval: { by: "حسن محمدی", at: "1404/11/08 14:00" },
+  },
+]
+
+export const monthlyKPIData = [
+  { month: "فروردین", mtbf: 145, mttr: 32, stoppages: 12, downtime: 384 },
+  { month: "اردیبهشت", mtbf: 152, mttr: 28, stoppages: 10, downtime: 280 },
+  { month: "خرداد", mtbf: 138, mttr: 35, stoppages: 14, downtime: 490 },
+  { month: "تیر", mtbf: 160, mttr: 25, stoppages: 8, downtime: 200 },
+  { month: "مرداد", mtbf: 155, mttr: 30, stoppages: 11, downtime: 330 },
+  { month: "شهریور", mtbf: 148, mttr: 33, stoppages: 13, downtime: 429 },
+  { month: "مهر", mtbf: 165, mttr: 22, stoppages: 7, downtime: 154 },
+  { month: "آبان", mtbf: 142, mttr: 38, stoppages: 15, downtime: 570 },
+  { month: "آذر", mtbf: 170, mttr: 20, stoppages: 6, downtime: 120 },
+  { month: "دی", mtbf: 158, mttr: 27, stoppages: 9, downtime: 243 },
+  { month: "بهمن", mtbf: 150, mttr: 31, stoppages: 11, downtime: 341 },
+]
+
+export const unitComparisonData = [
+  { unit: "واحد ۱", mtbf: 155, mttr: 30, availability: 83.8 },
+  { unit: "واحد ۲", mtbf: 140, mttr: 28, availability: 80.0 },
+  { unit: "واحد ۳", mtbf: 165, mttr: 32, availability: 80.6 },
+]
+
+export const causeParetoData = [
+  { cause: "فرسودگی قطعات", count: 35, totalMinutes: 2450, percentage: 28 },
+  { cause: "نقص فنی", count: 25, totalMinutes: 1750, percentage: 20 },
+  { cause: "خطای اپراتور", count: 20, totalMinutes: 800, percentage: 16 },
+  { cause: "کیفیت مواد", count: 15, totalMinutes: 675, percentage: 12 },
+  { cause: "عدم تعمیرات", count: 12, totalMinutes: 960, percentage: 10 },
+  { cause: "شرایط محیطی", count: 8, totalMinutes: 480, percentage: 6 },
+  { cause: "عدم آموزش", count: 6, totalMinutes: 270, percentage: 5 },
+  { cause: "طراحی نامناسب", count: 4, totalMinutes: 320, percentage: 3 },
+]
+
+export const overviewKPI: KPIData = {
+  mtbf: 153,
+  mttr: 29,
+  availability: 84.1,
+  totalStoppages: 126,
+  totalDowntime: 4041,
+  mtbfTarget: 160,
+  mttrTarget: 25,
+}
+
+export const mockUsers = [
+  { id: "usr1", name: "علی احمدی", username: "a.ahmadi", role: "operator" as const, unit: "واحد تولید ۱" },
+  { id: "usr2", name: "محمد رضایی", username: "m.rezaei", role: "operator" as const, unit: "واحد تولید ۲" },
+  { id: "usr3", name: "حسن محمدی", username: "h.mohammadi", role: "supervisor" as const, unit: "واحد تولید ۱" },
+  { id: "usr4", name: "مهدی نوری", username: "m.noori", role: "inspector" as const, unit: "واحد تولید ۱" },
+  { id: "usr5", name: "رضا کریمی", username: "r.karimi", role: "operator" as const, unit: "واحد تولید ۳" },
+  { id: "usr6", name: "سعید حسینی", username: "s.hosseini", role: "admin" as const, unit: "همه واحدها" },
+]

@@ -1,0 +1,100 @@
+{
+  "source": {
+    "file": "MTBF^0MTTR v7 (041115).xlsx",
+    "context": "ثبت توقفات تولید توسط اپراتورها و استخراج KPI و نمودارهای تحلیلی"
+  },
+  "domain_overview": {
+    "core_process": "ثبت و تحلیل توقف تجهیزات/خطوط تولید",
+    "primary_metrics": ["MTBF", "MTTR", "TotalDowntime", "DowntimeCount", "DowntimeRate"],
+    "analysis_focus": [
+      "مقایسه عملکرد واحدها",
+      "روند ماهانه شاخص‌ها",
+      "تحلیل علل توقف",
+      "شناسایی تجهیزات بحرانی"
+    ]
+  },
+  "entities": {
+    "Unit": ["id", "name", "code"],
+    "WorkshopOrHall": ["id", "name", "unitId"],
+    "Line": ["id", "name", "workshopId"],
+    "Machine": ["id", "name", "code", "lineId", "targetMtbf", "targetMttr"],
+    "Shift": ["id", "name", "startTime", "endTime"],
+    "User": ["id", "fullName", "role", "unitId"],
+    "DowntimeEvent": [
+      "id",
+      "unitId",
+      "lineId",
+      "machineId",
+      "shiftId",
+      "operatorId",
+      "startAt",
+      "endAt",
+      "durationMinutes",
+      "stopType",
+      "stopCause",
+      "description",
+      "status",
+      "approvedBy"
+    ],
+    "StopType": ["id", "name"],
+    "StopCause": ["id", "name", "stopTypeId"],
+    "KpiTarget": ["id", "scopeType", "scopeId", "mtbfTarget", "mttrTarget"]
+  },
+  "workflows": {
+    "entry": "اپراتور/سرپرست ثبت توقف",
+    "review": "سرپرست تأیید اولیه",
+    "quality_control": "ناظر کنترل کیفیت تأیید نهایی و قفل رکورد",
+    "post_approval": "محاسبه KPI و نمایش در داشبوردها"
+  },
+  "validation_rules": [
+    "زمان پایان بعد از زمان شروع باشد",
+    "عدم همپوشانی توقف‌ها برای یک ماشین",
+    "الزام انتخاب نوع توقف و علت توقف",
+    "محاسبه خودکار مدت توقف"
+  ],
+  "reports_and_dashboards": {
+    "factory_dashboard": [
+      "MTBF/MTTR کلی",
+      "روند ماهانه",
+      "مقایسه واحدها با هدف"
+    ],
+    "unit_dashboard": [
+      "KPI روزانه/هفتگی/ماهانه",
+      "نمودار روند نسبت به هدف",
+      "توقفات پرتکرار"
+    ],
+    "pareto_reports": [
+      "علت‌های توقف بر اساس زمان",
+      "علت‌های توقف بر اساس تعداد"
+    ],
+    "critical_machines": [
+      "کمترین MTBF",
+      "بیشترین MTTR",
+      "بیشترین مجموع توقف"
+    ],
+    "data_quality": [
+      "رکوردهای ناقص",
+      "زمان‌های غیرعادی",
+      "علت‌های نامشخص"
+    ]
+  },
+  "tech_preferences": {
+    "frontend": "Next.js + TypeScript + Tailwind",
+    "backend": "Python",
+    "database": "Lightweight yet powerful"
+  },
+  "db_recommendations": [
+    {
+      "name": "SQLite",
+      "reason": "سبک، قابل استقرار روی سرور کوچک، مناسب شروع سریع و گزارش‌گیری"
+    },
+    {
+      "name": "DuckDB",
+      "reason": "تحلیل‌محور و سریع برای گزارش‌های سنگین، مناسب تحلیل داخلی"
+    }
+  ],
+  "assumptions": [
+    "ثبت توقف‌ها در تمام واحدها نیاز به دسترسی هم‌زمان دارد",
+    "اهداف MTBF/MTTR قابل تنظیم برای هر ماشین یا واحد هستند"
+  ]
+}
