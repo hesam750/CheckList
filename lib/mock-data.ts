@@ -1,275 +1,363 @@
 import type { Stoppage, Unit, KPIData } from "./types"
+import excelData from "@/data/excel-data.json"
 
-export const units: Unit[] = [
-  {
-    id: "u1",
-    name: "واحد تولید ۱",
-    lines: [
-      {
-        id: "l1",
-        name: "خط تولید A",
-        unitId: "u1",
-        machines: [
-          { id: "m1", name: "دستگاه پرس ۱", lineId: "l1", mtbfTarget: 120, mttrTarget: 30 },
-          { id: "m2", name: "دستگاه برش ۱", lineId: "l1", mtbfTarget: 150, mttrTarget: 25 },
-          { id: "m3", name: "دستگاه جوش ۱", lineId: "l1", mtbfTarget: 200, mttrTarget: 45 },
-        ],
-      },
-      {
-        id: "l2",
-        name: "خط تولید B",
-        unitId: "u1",
-        machines: [
-          { id: "m4", name: "دستگاه پرس ۲", lineId: "l2", mtbfTarget: 130, mttrTarget: 35 },
-          { id: "m5", name: "دستگاه CNC ۱", lineId: "l2", mtbfTarget: 180, mttrTarget: 50 },
-        ],
-      },
-    ],
-  },
-  {
-    id: "u2",
-    name: "واحد تولید ۲",
-    lines: [
-      {
-        id: "l3",
-        name: "خط تولید C",
-        unitId: "u2",
-        machines: [
-          { id: "m6", name: "دستگاه بسته‌بندی ۱", lineId: "l3", mtbfTarget: 100, mttrTarget: 20 },
-          { id: "m7", name: "دستگاه لیبل‌زن ۱", lineId: "l3", mtbfTarget: 90, mttrTarget: 15 },
-        ],
-      },
-      {
-        id: "l4",
-        name: "خط تولید D",
-        unitId: "u2",
-        machines: [
-          { id: "m8", name: "دستگاه مونتاژ ۱", lineId: "l4", mtbfTarget: 160, mttrTarget: 40 },
-        ],
-      },
-    ],
-  },
-  {
-    id: "u3",
-    name: "واحد تولید ۳",
-    lines: [
-      {
-        id: "l5",
-        name: "خط تولید E",
-        unitId: "u3",
-        machines: [
-          { id: "m9", name: "دستگاه رنگ ۱", lineId: "l5", mtbfTarget: 110, mttrTarget: 35 },
-          { id: "m10", name: "دستگاه خشک‌کن ۱", lineId: "l5", mtbfTarget: 140, mttrTarget: 25 },
-        ],
-      },
-    ],
-  },
-]
+type ExcelSheet = { rows: (string | number | null)[][] }
+type ExcelData = { sheets?: Record<string, ExcelSheet> }
 
-export const stoppageTypes = [
-  "خرابی مکانیکی",
-  "خرابی الکتریکی",
-  "خرابی نرم‌افزاری",
-  "کمبود مواد اولیه",
-  "تعمیرات پیشگیرانه",
-  "تنظیمات و راه‌اندازی",
-  "عوامل انسانی",
-  "قطع برق",
-  "سایر",
-]
+const data = excelData as ExcelData
+const rows = data.sheets?.["ورود داده"]?.rows ?? []
+const headerIndex = rows.findIndex((row) => row?.[0] === "ردیف")
+const headerRow = headerIndex >= 0 ? rows[headerIndex] : []
+const columnMap = new Map<string, number>()
+headerRow.forEach((value, index) => {
+  if (typeof value === "string" && value.trim()) {
+    columnMap.set(value.trim(), index)
+  }
+})
 
-export const stoppageCauses = [
-  "فرسودگی قطعات",
-  "عدم تعمیرات به‌موقع",
-  "خطای اپراتور",
-  "کیفیت پایین مواد اولیه",
-  "نقص فنی",
-  "شرایط محیطی",
-  "عدم آموزش کافی",
-  "طراحی نامناسب",
-  "سایر",
-]
-
-export const shifts = ["صبح", "عصر", "شب"]
-
-export const mockStoppages: Stoppage[] = [
-  {
-    id: "s1",
-    unit: "واحد تولید ۱",
-    line: "خط تولید A",
-    machine: "دستگاه پرس ۱",
-    shift: "صبح",
-    startTime: "1404/11/15 08:30",
-    endTime: "1404/11/15 09:45",
-    type: "خرابی مکانیکی",
-    cause: "فرسودگی قطعات",
-    description: "شکستن فک پرس و نیاز به تعویض",
-    status: "pending_supervisor",
-    createdBy: "علی احمدی",
-    createdAt: "1404/11/15 09:50",
-  },
-  {
-    id: "s2",
-    unit: "واحد تولید ۱",
-    line: "خط تولید B",
-    machine: "دستگاه CNC ۱",
-    shift: "عصر",
-    startTime: "1404/11/14 14:00",
-    endTime: "1404/11/14 15:30",
-    type: "خرابی نرم‌افزاری",
-    cause: "نقص فنی",
-    description: "هنگ کردن سیستم کنترل CNC",
-    status: "pending_inspector",
-    createdBy: "محمد رضایی",
-    createdAt: "1404/11/14 15:35",
-    supervisorApproval: { by: "حسن محمدی", at: "1404/11/14 16:00" },
-  },
-  {
-    id: "s3",
-    unit: "واحد تولید ۲",
-    line: "خط تولید C",
-    machine: "دستگاه بسته‌بندی ۱",
-    shift: "صبح",
-    startTime: "1404/11/13 10:00",
-    endTime: "1404/11/13 10:45",
-    type: "کمبود مواد اولیه",
-    cause: "کیفیت پایین مواد اولیه",
-    description: "اتمام فیلم بسته‌بندی",
-    status: "approved",
-    createdBy: "رضا کریمی",
-    createdAt: "1404/11/13 10:50",
-    supervisorApproval: { by: "حسن محمدی", at: "1404/11/13 11:00" },
-    inspectorApproval: { by: "مهدی نوری", at: "1404/11/13 11:30" },
-  },
-  {
-    id: "s4",
-    unit: "واحد تولید ۲",
-    line: "خط تولید D",
-    machine: "دستگاه مونتاژ ۱",
-    shift: "شب",
-    startTime: "1404/11/12 22:00",
-    endTime: "1404/11/12 23:15",
-    type: "خرابی الکتریکی",
-    cause: "عدم تعمیرات به‌موقع",
-    description: "سوختن موتور اصلی دستگاه",
-    status: "approved",
-    createdBy: "علی احمدی",
-    createdAt: "1404/11/12 23:20",
-    supervisorApproval: { by: "حسن محمدی", at: "1404/11/13 07:00" },
-    inspectorApproval: { by: "مهدی نوری", at: "1404/11/13 08:00" },
-  },
-  {
-    id: "s5",
-    unit: "واحد تولید ۳",
-    line: "خط تولید E",
-    machine: "دستگاه رنگ ۱",
-    shift: "صبح",
-    startTime: "1404/11/11 09:00",
-    endTime: "1404/11/11 11:30",
-    type: "تعمیرات پیشگیرانه",
-    cause: "فرسودگی قطعات",
-    description: "تعویض نازل‌های پاشش رنگ",
-    status: "rejected",
-    createdBy: "محمد رضایی",
-    createdAt: "1404/11/11 11:35",
-    supervisorApproval: { by: "حسن محمدی", at: "1404/11/11 12:00", note: "اطلاعات ناقص" },
-  },
-  {
-    id: "s6",
-    unit: "واحد تولید ۱",
-    line: "خط تولید A",
-    machine: "دستگاه برش ۱",
-    shift: "عصر",
-    startTime: "1404/11/10 15:30",
-    endTime: "1404/11/10 16:00",
-    type: "عوامل انسانی",
-    cause: "خطای اپراتور",
-    description: "تنظیم نادرست پارامترهای برش",
-    status: "pending_supervisor",
-    createdBy: "رضا کریمی",
-    createdAt: "1404/11/10 16:05",
-  },
-  {
-    id: "s7",
-    unit: "واحد تولید ۱",
-    line: "خط تولید A",
-    machine: "دستگاه جوش ۱",
-    shift: "صبح",
-    startTime: "1404/11/09 07:30",
-    endTime: "1404/11/09 08:45",
-    type: "قطع برق",
-    cause: "شرایط محیطی",
-    description: "قطع برق ناگهانی سالن",
-    status: "approved",
-    createdBy: "علی احمدی",
-    createdAt: "1404/11/09 08:50",
-    supervisorApproval: { by: "حسن محمدی", at: "1404/11/09 09:00" },
-    inspectorApproval: { by: "مهدی نوری", at: "1404/11/09 09:30" },
-  },
-  {
-    id: "s8",
-    unit: "واحد تولید ۲",
-    line: "خط تولید C",
-    machine: "دستگاه لیبل‌زن ۱",
-    shift: "عصر",
-    startTime: "1404/11/08 13:00",
-    endTime: "1404/11/08 13:45",
-    type: "خرابی مکانیکی",
-    cause: "فرسودگی قطعات",
-    description: "خرابی رولر انتقال لیبل",
-    status: "pending_inspector",
-    createdBy: "محمد رضایی",
-    createdAt: "1404/11/08 13:50",
-    supervisorApproval: { by: "حسن محمدی", at: "1404/11/08 14:00" },
-  },
-]
-
-export const monthlyKPIData = [
-  { month: "فروردین", mtbf: 145, mttr: 32, stoppages: 12, downtime: 384 },
-  { month: "اردیبهشت", mtbf: 152, mttr: 28, stoppages: 10, downtime: 280 },
-  { month: "خرداد", mtbf: 138, mttr: 35, stoppages: 14, downtime: 490 },
-  { month: "تیر", mtbf: 160, mttr: 25, stoppages: 8, downtime: 200 },
-  { month: "مرداد", mtbf: 155, mttr: 30, stoppages: 11, downtime: 330 },
-  { month: "شهریور", mtbf: 148, mttr: 33, stoppages: 13, downtime: 429 },
-  { month: "مهر", mtbf: 165, mttr: 22, stoppages: 7, downtime: 154 },
-  { month: "آبان", mtbf: 142, mttr: 38, stoppages: 15, downtime: 570 },
-  { month: "آذر", mtbf: 170, mttr: 20, stoppages: 6, downtime: 120 },
-  { month: "دی", mtbf: 158, mttr: 27, stoppages: 9, downtime: 243 },
-  { month: "بهمن", mtbf: 150, mttr: 31, stoppages: 11, downtime: 341 },
-]
-
-export const unitComparisonData = [
-  { unit: "واحد ۱", mtbf: 155, mttr: 30, availability: 83.8 },
-  { unit: "واحد ۲", mtbf: 140, mttr: 28, availability: 80.0 },
-  { unit: "واحد ۳", mtbf: 165, mttr: 32, availability: 80.6 },
-]
-
-export const causeParetoData = [
-  { cause: "فرسودگی قطعات", count: 35, totalMinutes: 2450, percentage: 28 },
-  { cause: "نقص فنی", count: 25, totalMinutes: 1750, percentage: 20 },
-  { cause: "خطای اپراتور", count: 20, totalMinutes: 800, percentage: 16 },
-  { cause: "کیفیت مواد", count: 15, totalMinutes: 675, percentage: 12 },
-  { cause: "عدم تعمیرات", count: 12, totalMinutes: 960, percentage: 10 },
-  { cause: "شرایط محیطی", count: 8, totalMinutes: 480, percentage: 6 },
-  { cause: "عدم آموزش", count: 6, totalMinutes: 270, percentage: 5 },
-  { cause: "طراحی نامناسب", count: 4, totalMinutes: 320, percentage: 3 },
-]
-
-export const overviewKPI: KPIData = {
-  mtbf: 153,
-  mttr: 29,
-  availability: 84.1,
-  totalStoppages: 126,
-  totalDowntime: 4041,
-  mtbfTarget: 160,
-  mttrTarget: 25,
+const normalizeCell = (value: string | number | null | undefined) => {
+  if (value === null || value === undefined) return null
+  if (value === "System.Xml.XmlElement") return null
+  return value
 }
 
-export const mockUsers = [
-  { id: "usr1", name: "علی احمدی", username: "a.ahmadi", role: "operator" as const, unit: "واحد تولید ۱" },
-  { id: "usr2", name: "محمد رضایی", username: "m.rezaei", role: "operator" as const, unit: "واحد تولید ۲" },
-  { id: "usr3", name: "حسن محمدی", username: "h.mohammadi", role: "supervisor" as const, unit: "واحد تولید ۱" },
-  { id: "usr4", name: "مهدی نوری", username: "m.noori", role: "inspector" as const, unit: "واحد تولید ۱" },
-  { id: "usr5", name: "رضا کریمی", username: "r.karimi", role: "operator" as const, unit: "واحد تولید ۳" },
-  { id: "usr6", name: "سعید حسینی", username: "s.hosseini", role: "admin" as const, unit: "همه واحدها" },
+const getCell = (row: (string | number | null)[], key: string) => {
+  const index = columnMap.get(key)
+  if (index === undefined) return null
+  return normalizeCell(row[index] ?? null)
+}
+
+const toText = (value: string | number | null) => {
+  if (value === null || value === undefined) return ""
+  return String(value).trim()
+}
+
+const toNumber = (value: string | number | null) => {
+  if (value === null || value === undefined) return null
+  if (typeof value === "number") return value
+  const parsed = Number.parseFloat(value)
+  return Number.isNaN(parsed) ? null : parsed
+}
+
+const pad2 = (value: number) => value.toString().padStart(2, "0")
+
+const buildClock = (hourValue: string | number | null, minuteValue: string | number | null) => {
+  const hour = toNumber(hourValue)
+  const minute = toNumber(minuteValue)
+  if (hour === null || minute === null) return ""
+  return `${pad2(Math.floor(hour))}:${pad2(Math.floor(minute))}`
+}
+
+const buildTime = (dateValue: string | number | null, clockValue: string) => {
+  const date = toText(dateValue)
+  if (!date && !clockValue) return ""
+  if (!date) return clockValue
+  if (!clockValue) return date
+  return `${date} ${clockValue}`
+}
+
+const resolveShift = (hourValue: string | number | null) => {
+  const hour = toNumber(hourValue)
+  if (hour === null) return "نامشخص"
+  if (hour >= 7 && hour < 15) return "صبح"
+  if (hour >= 15 && hour < 23) return "عصر"
+  return "شب"
+}
+
+const toYearFromDate = (value: string) => {
+  const parts = value.split("/")
+  if (parts.length < 1) return null
+  const year = Number.parseInt(parts[0], 10)
+  return Number.isNaN(year) ? null : year
+}
+
+const toMonthFromDate = (value: string) => {
+  const parts = value.split("/")
+  if (parts.length < 2) return null
+  const month = Number.parseInt(parts[1], 10)
+  return Number.isNaN(month) ? null : month
+}
+
+const getRowYear = (row: (string | number | null)[]) => {
+  const yearValue = toNumber(getCell(row, "سال رفع توقف"))
+  if (yearValue !== null) return Math.floor(yearValue)
+  const endDate = toText(getCell(row, "تاریخ پایان توقف"))
+  const startDate = toText(getCell(row, "تاریخ توقف"))
+  return toYearFromDate(endDate) ?? toYearFromDate(startDate)
+}
+
+const getRowMonth = (row: (string | number | null)[]) => {
+  const monthValue = toNumber(getCell(row, "ماه رفع توقف")) ?? toNumber(getCell(row, "ماه توقف"))
+  if (monthValue !== null) return Math.floor(monthValue)
+  const endDate = toText(getCell(row, "تاریخ پایان توقف"))
+  const startDate = toText(getCell(row, "تاریخ توقف"))
+  return toMonthFromDate(endDate) ?? toMonthFromDate(startDate)
+}
+
+const dataRows = headerIndex >= 0 ? rows.slice(headerIndex + 1) : []
+
+const machineTargetMap = new Map<string, { mtbfTarget: number; mttrTarget: number }>()
+dataRows.forEach((row) => {
+  const machineName =
+    toText(getCell(row, "دستگاه")) ||
+    toText(getCell(row, "توضیح دستگاه"))
+  if (!machineName) return
+  const mtbfTarget = toNumber(getCell(row, "هدف MTBF")) ?? 0
+  const mttrTarget = toNumber(getCell(row, "هدف MTTR")) ?? 0
+  if (!machineTargetMap.has(machineName)) {
+    machineTargetMap.set(machineName, { mtbfTarget, mttrTarget })
+    return
+  }
+  const existing = machineTargetMap.get(machineName)!
+  machineTargetMap.set(machineName, {
+    mtbfTarget: Math.max(existing.mtbfTarget, mtbfTarget),
+    mttrTarget: Math.max(existing.mttrTarget, mttrTarget),
+  })
+})
+
+const stoppages: Stoppage[] = dataRows.reduce<Stoppage[]>((acc, row, index) => {
+  const rowId = toText(getCell(row, "ردیف"))
+  if (!rowId || rowId.toLowerCase().includes("total")) return acc
+  const unit = toText(getCell(row, "سالن")) || "نامشخص"
+  const machine =
+    toText(getCell(row, "دستگاه")) ||
+    toText(getCell(row, "توضیح دستگاه")) ||
+    "نامشخص"
+  const line = unit
+  const code = toText(getCell(row, "کد"))
+  const type = toText(getCell(row, "نوع توقف")) || "نامشخص"
+  const description = toText(getCell(row, "شرح توقف"))
+  const cause = description || type
+  const startDate = toText(getCell(row, "تاریخ توقف"))
+  const startHour = getCell(row, "ساعت توقف2") ?? getCell(row, "ساعت توقف")
+  const startMinute = getCell(row, "دقیقه توقف")
+  const startClock = buildClock(startHour, startMinute)
+  const startTime = buildTime(startDate, startClock)
+  const endDate = toText(getCell(row, "تاریخ پایان توقف"))
+  const endHour = getCell(row, "ساعت رفع توقف")
+  const endMinute = getCell(row, "دقیقه رفع توقف")
+  const endClock = buildClock(endHour, endMinute)
+  const endTime = buildTime(endDate, endClock)
+  const durationMinutes = toNumber(getCell(row, "TTR(mints)")) ?? undefined
+  const createdAt = startTime || startDate
+  acc.push({
+    id: `s-${rowId || index + 1}`,
+    code: code || undefined,
+    unit,
+    line,
+    machine,
+    shift: resolveShift(startHour),
+    startDate: startDate || undefined,
+    startClock: startClock || undefined,
+    startTime,
+    endDate: endDate || undefined,
+    endClock: endClock || undefined,
+    endTime,
+    durationMinutes,
+    type,
+    cause,
+    description: description || "ثبت نشده",
+    status: "approved",
+    createdBy: "سیستم اکسل",
+    createdAt: createdAt || "نامشخص",
+  })
+  return acc
+}, [])
+
+const unitMap = new Map<string, Unit>()
+stoppages.forEach((stoppage) => {
+  const unitName = stoppage.unit
+  if (!unitMap.has(unitName)) {
+    unitMap.set(unitName, {
+      id: `u${unitMap.size + 1}`,
+      name: unitName,
+      lines: [],
+    })
+  }
+  const unit = unitMap.get(unitName)!
+  const lineName = stoppage.line || unitName
+  let line = unit.lines.find((item) => item.name === lineName)
+  if (!line) {
+    line = {
+      id: `l${unit.lines.length + 1}`,
+      name: lineName,
+      unitId: unit.id,
+      machines: [],
+    }
+    unit.lines.push(line)
+  }
+  const machineName = stoppage.machine || "نامشخص"
+  if (!line.machines.some((machine) => machine.name === machineName)) {
+    const targets = machineTargetMap.get(machineName)
+    const mtbfTarget = targets?.mtbfTarget ?? 0
+    const mttrTarget = targets?.mttrTarget ?? 0
+    line.machines.push({
+      id: `m${line.machines.length + 1}`,
+      name: machineName,
+      lineId: line.id,
+      mtbfTarget,
+      mttrTarget,
+    })
+  }
+})
+
+export const units: Unit[] = Array.from(unitMap.values())
+
+export const mockStoppages: Stoppage[] = stoppages
+
+export const shifts = Array.from(
+  new Set(stoppages.map((stoppage) => stoppage.shift).filter(Boolean))
+)
+
+export const stoppageTypes = Array.from(
+  new Set(stoppages.map((stoppage) => stoppage.type).filter(Boolean))
+)
+
+export const stoppageCauses = Array.from(
+  new Set(stoppages.map((stoppage) => stoppage.cause).filter(Boolean))
+)
+
+const monthNames = [
+  "فروردین",
+  "اردیبهشت",
+  "خرداد",
+  "تیر",
+  "مرداد",
+  "شهریور",
+  "مهر",
+  "آبان",
+  "آذر",
+  "دی",
+  "بهمن",
+  "اسفند",
 ]
+
+const rowYears = dataRows.map((row) => getRowYear(row)).filter((year): year is number => year !== null)
+const latestYear = rowYears.length ? Math.max(...rowYears) : null
+const monthGroups = new Map<string, { mttrValues: number[]; mtbfValues: number[]; downtime: number; count: number }>()
+
+dataRows.forEach((row) => {
+  const rowYear = getRowYear(row)
+  if (latestYear !== null && rowYear !== latestYear) return
+  const monthValue = getRowMonth(row)
+  if (monthValue === null) return
+  const monthIndex = Math.floor(monthValue) - 1
+  const monthLabel = monthNames[monthIndex] ?? "نامشخص"
+  if (!monthGroups.has(monthLabel)) {
+    monthGroups.set(monthLabel, { mttrValues: [], mtbfValues: [], downtime: 0, count: 0 })
+  }
+  const group = monthGroups.get(monthLabel)!
+  const mttrValue = toNumber(getCell(row, "TTR(mints)"))
+  if (mttrValue !== null) {
+    group.mttrValues.push(mttrValue)
+    group.downtime += mttrValue
+  }
+  const mtbfValue = toNumber(getCell(row, "TBF(hours)"))
+  if (mtbfValue !== null) {
+    group.mtbfValues.push(mtbfValue * 60)
+  }
+  group.count += 1
+})
+
+export const monthlyKPIData = Array.from(monthGroups.entries()).map(([month, group]) => {
+  const mttr = group.count ? Math.round(group.downtime / group.count) : 0
+  const mtbf =
+    group.mtbfValues.length > 0
+      ? Math.round(group.mtbfValues.reduce((sum, v) => sum + v, 0) / group.mtbfValues.length)
+      : 0
+  return {
+    month,
+    mtbf,
+    mttr,
+    stoppages: group.count,
+    downtime: Math.round(group.downtime),
+  }
+})
+
+const unitGroups = new Map<string, { mttrValues: number[]; mtbfValues: number[] }>()
+stoppages.forEach((stoppage) => {
+  if (!unitGroups.has(stoppage.unit)) {
+    unitGroups.set(stoppage.unit, { mttrValues: [], mtbfValues: [] })
+  }
+  const group = unitGroups.get(stoppage.unit)!
+  if (stoppage.durationMinutes !== undefined) {
+    group.mttrValues.push(stoppage.durationMinutes)
+  }
+})
+
+dataRows.forEach((row) => {
+  const unitName = toText(getCell(row, "سالن")) || "نامشخص"
+  if (!unitGroups.has(unitName)) {
+    unitGroups.set(unitName, { mttrValues: [], mtbfValues: [] })
+  }
+  const group = unitGroups.get(unitName)!
+  const mtbfValue = toNumber(getCell(row, "TBF(hours)"))
+  if (mtbfValue !== null) {
+    group.mtbfValues.push(mtbfValue * 60)
+  }
+})
+
+export const unitComparisonData = Array.from(unitGroups.entries()).map(([unit, group]) => {
+  const mttr = group.mttrValues.length
+    ? Math.round(group.mttrValues.reduce((sum, v) => sum + v, 0) / group.mttrValues.length)
+    : 0
+  const mtbf =
+    group.mtbfValues.length > 0
+      ? Math.round(group.mtbfValues.reduce((sum, v) => sum + v, 0) / group.mtbfValues.length)
+      : 0
+  const availability = mtbf + mttr > 0 ? Number(((mtbf / (mtbf + mttr)) * 100).toFixed(1)) : 0
+  return { unit, mtbf, mttr, availability }
+})
+
+const causeGroups = new Map<string, { count: number; totalMinutes: number }>()
+stoppages.forEach((stoppage) => {
+  const key = stoppage.cause || "نامشخص"
+  if (!causeGroups.has(key)) {
+    causeGroups.set(key, { count: 0, totalMinutes: 0 })
+  }
+  const group = causeGroups.get(key)!
+  group.count += 1
+  group.totalMinutes += stoppage.durationMinutes ?? 0
+})
+
+const totalCauseCount = Array.from(causeGroups.values()).reduce((sum, item) => sum + item.count, 0)
+
+export const causeParetoData = Array.from(causeGroups.entries())
+  .map(([cause, values]) => ({
+    cause,
+    count: values.count,
+    totalMinutes: Math.round(values.totalMinutes),
+    percentage: totalCauseCount ? Math.round((values.count / totalCauseCount) * 100) : 0,
+  }))
+  .sort((a, b) => b.count - a.count)
+
+const totalDowntime = stoppages.reduce((sum, item) => sum + (item.durationMinutes ?? 0), 0)
+const totalStoppages = stoppages.length
+const mttr = totalStoppages ? Math.round(totalDowntime / totalStoppages) : 0
+const mtbfValues = dataRows
+  .map((row) => toNumber(getCell(row, "TBF(hours)")))
+  .filter((value): value is number => value !== null)
+const mtbf = mtbfValues.length
+  ? Math.round((mtbfValues.reduce((sum, v) => sum + v, 0) / mtbfValues.length) * 60)
+  : 0
+const availability = mtbf + mttr > 0 ? Number(((mtbf / (mtbf + mttr)) * 100).toFixed(1)) : 0
+const mtbfTargets = dataRows
+  .map((row) => toNumber(getCell(row, "هدف MTBF")))
+  .filter((value): value is number => value !== null)
+const mttrTargets = dataRows
+  .map((row) => toNumber(getCell(row, "هدف MTTR")))
+  .filter((value): value is number => value !== null)
+
+export const overviewKPI: KPIData = {
+  mtbf,
+  mttr,
+  availability,
+  totalStoppages,
+  totalDowntime: Math.round(totalDowntime),
+  mtbfTarget: mtbfTargets.length
+    ? Math.round(mtbfTargets.reduce((sum, v) => sum + v, 0) / mtbfTargets.length)
+    : 0,
+  mttrTarget: mttrTargets.length
+    ? Math.round(mttrTargets.reduce((sum, v) => sum + v, 0) / mttrTargets.length)
+    : 0,
+}
