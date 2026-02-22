@@ -1,0 +1,67 @@
+[
+  {
+    "id": "usr1771320978048",
+    "name": "تست",
+    "username": "تست",
+    "password": "123",
+    "role": "operator",
+    "unit": "واحد تولید ۱",
+    "permissions": [
+      "stoppages:create"
+    ]
+  },
+  {
+    "id": "usr6",
+    "name": "سعید حسینی",
+    "username": "admin",
+    "password": "admin123",
+    "role": "admin",
+    "unit": "همه واحدها",
+    "permissions": [
+      "dashboard:read",
+      "stoppages:create",
+      "stoppages:approve",
+      "reports:read",
+      "settings:manage",
+      "users:manage"
+    ]
+  },
+  {
+    "id": "usr3",
+    "name": "حسن محمدی",
+    "username": "supervisor",
+    "password": "123456",
+    "role": "supervisor",
+    "unit": "واحد تولید ۱",
+    "permissions": [
+      "dashboard:read",
+      "stoppages:create",
+      "stoppages:approve",
+      "reports:read"
+    ]
+  },
+  {
+    "id": "usr4",
+    "name": "مهدی نوری",
+    "username": "inspector",
+    "password": "123456",
+    "role": "inspector",
+    "unit": "واحد تولید ۱",
+    "permissions": [
+      "dashboard:read",
+      "stoppages:approve",
+      "reports:read"
+    ]
+  },
+  {
+    "id": "usr1",
+    "name": "علی احمدی",
+    "username": "operator",
+    "password": "123456",
+    "role": "operator",
+    "unit": "واحد تولید ۱",
+    "permissions": [
+      "stoppages:create"
+    ]
+  }
+]

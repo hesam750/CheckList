@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import Image from "next/image"
 import { usePathname } from "next/navigation"
 import { useEffect, useState } from "react"
 import { useTheme } from "next-themes"
@@ -11,38 +12,49 @@ import {
   BarChart3,
   Settings,
   LogOut,
-  Factory,
   Moon,
   Sun,
   Menu,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { Switch } from "@/components/ui/switch"
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
+import type { AuthUser, Permission } from "@/lib/types"
 
 const navItems = [
-  { href: "/dashboard", label: "داشبورد", icon: LayoutDashboard },
-  { href: "/stoppages/new", label: "ثبت توقف", icon: AlertTriangle },
-  { href: "/stoppages/approve", label: "تایید توقف‌ها", icon: CheckSquare },
-  { href: "/reports", label: "گزارش علت توقف", icon: BarChart3 },
-  { href: "/settings", label: "مدیریت پایه", icon: Settings },
+  { href: "/dashboard", label: "داشبورد", icon: LayoutDashboard, permission: "dashboard:read" },
+  { href: "/stoppages/new", label: "ثبت توقف", icon: AlertTriangle, permission: "stoppages:create" },
+  { href: "/stoppages/approve", label: "تایید توقف‌ها", icon: CheckSquare, permission: "stoppages:approve" },
+  { href: "/reports", label: "گزارش علت توقف", icon: BarChart3, permission: "reports:read" },
+  { href: "/settings", label: "مدیریت پایه", icon: Settings, permission: "settings:manage" },
 ]
+
+const roleLabels: Record<string, string> = {
+  operator: "اپراتور",
+  supervisor: "سرپرست",
+  inspector: "ناظر",
+  admin: "مدیر سیستم",
+}
 
 function SidebarContent({
   pathname,
-  isDark,
-  onThemeChange,
+  user,
+  ready,
 }: {
   pathname: string | null
-  isDark: boolean
-  onThemeChange: (checked: boolean) => void
+  user: AuthUser | null
+  ready: boolean
 }) {
+  const permissions = user?.permissions ?? []
+  const allowedItems = ready
+    ? navItems.filter((item) => permissions.includes(item.permission as Permission))
+    : []
+
   return (
     <>
       <div className="flex items-center gap-3 px-6 py-5 border-b border-sidebar-border">
-        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary">
-          <Factory className="h-5 w-5 text-primary-foreground" />
+        <div className="flex h-28 w-28 items-center justify-center">
+          <Image src="/fanap.png" alt="لوگو فناپ" width={96} height={96} className="h-24 w-24 object-contain" />
         </div>
         <div>
           <h1 className="text-sm font-bold text-sidebar-foreground">سامانه توقفات</h1>
@@ -51,7 +63,7 @@ function SidebarContent({
       </div>
 
       <nav className="flex-1 px-3 py-4 space-y-1">
-        {navItems.map((item) => {
+        {allowedItems.map((item) => {
           const isActive = pathname === item.href || pathname?.startsWith(item.href + "/")
           return (
             <Link
@@ -72,23 +84,13 @@ function SidebarContent({
       </nav>
 
       <div className="border-t border-sidebar-border p-3">
-        <div className="flex items-center justify-between rounded-lg px-3 py-2.5 mb-2 bg-sidebar-accent text-sidebar-accent-foreground">
-          <div className="flex items-center gap-2 text-xs">
-            {isDark ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
-            تم
-          </div>
-          <Switch
-            checked={isDark}
-            onCheckedChange={onThemeChange}
-          />
-        </div>
         <div className="flex items-center gap-3 rounded-lg px-3 py-2.5 mb-1">
           <div className="flex h-8 w-8 items-center justify-center rounded-full bg-sidebar-accent text-sidebar-accent-foreground text-xs font-bold">
-            س‌ح
+            {user?.name ? user.name.split(" ").map((part) => part[0]).slice(0, 2).join("‌") : "—"}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-sidebar-foreground truncate">سعید حسینی</p>
-            <p className="text-xs text-sidebar-foreground/50">مدیر سیستم</p>
+            <p className="text-sm font-medium text-sidebar-foreground truncate">{user?.name ?? "—"}</p>
+            <p className="text-xs text-sidebar-foreground/50">{user ? roleLabels[user.role] : "—"}</p>
           </div>
         </div>
         <Link
@@ -103,26 +105,16 @@ function SidebarContent({
   )
 }
 
-export function AppSidebar() {
+export function AppSidebar({ user, ready }: { user: AuthUser | null; ready: boolean }) {
   const pathname = usePathname()
-  const { theme, setTheme } = useTheme()
-  const [mounted, setMounted] = useState(false)
-
-  useEffect(() => {
-    setMounted(true)
-  }, [])
-
-  const isDark = theme === "dark"
 
   return (
     <aside className="fixed right-0 top-0 z-40 hidden h-screen w-64 flex-col bg-sidebar text-sidebar-foreground border-l border-sidebar-border lg:flex">
-      {mounted && (
-        <SidebarContent
-          pathname={pathname}
-          isDark={isDark}
-          onThemeChange={(checked) => setTheme(checked ? "dark" : "light")}
-        />
-      )}
+      <SidebarContent
+        pathname={pathname}
+        user={user}
+        ready={ready}
+      />
     </aside>
   )
 }
@@ -130,56 +122,58 @@ export function AppSidebar() {
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const { theme, setTheme } = useTheme()
-  const [mounted, setMounted] = useState(false)
+  const [user, setUser] = useState<AuthUser | null>(null)
+  const [userReady, setUserReady] = useState(false)
 
   useEffect(() => {
-    setMounted(true)
+    fetch("/api/auth/me")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => setUser(data?.user ?? null))
+      .finally(() => setUserReady(true))
   }, [])
 
   const isDark = theme === "dark"
 
   return (
     <div className="min-h-screen bg-background">
-      <AppSidebar />
+      <AppSidebar user={user} ready={userReady} />
       <div className="sticky top-0 z-30 h-14 bg-background/80 backdrop-blur border-b border-border">
         <div className="relative h-full px-4">
-          {mounted && (
-            <>
-              <div className="absolute right-4 top-1/2 -translate-y-1/2">
-                <Sheet>
-                  <SheetTrigger asChild>
-                    <Button size="icon" variant="outline">
-                      <Menu className="h-4 w-4" />
-                    </Button>
-                  </SheetTrigger>
-                  <SheetContent side="right" className="w-72 bg-sidebar text-sidebar-foreground border-l border-sidebar-border p-0">
-                    <SheetTitle className="sr-only">منوی ناوبری</SheetTitle>
-                    <SidebarContent
-                      pathname={pathname}
-                      isDark={isDark}
-                      onThemeChange={(checked) => setTheme(checked ? "dark" : "light")}
-                    />
-                  </SheetContent>
-                </Sheet>
+          <>
+            <div className="absolute right-4 top-1/2 -translate-y-1/2">
+              <Sheet>
+                <SheetTrigger asChild>
+                  <Button size="icon" variant="outline">
+                    <Menu className="h-4 w-4" />
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="right" className="w-72 bg-sidebar text-sidebar-foreground border-l border-sidebar-border p-0">
+                  <SheetTitle className="sr-only">منوی ناوبری</SheetTitle>
+                  <SidebarContent
+                    pathname={pathname}
+                    user={user}
+                    ready={userReady}
+                  />
+                </SheetContent>
+              </Sheet>
+            </div>
+            <div className="absolute left-4 top-1/2 -translate-y-1/2">
+              <Button
+                size="icon"
+                variant="outline"
+                onClick={() => setTheme(isDark ? "light" : "dark")}
+                aria-label={isDark ? "تغییر به تم روشن" : "تغییر به تم تیره"}
+              >
+                {isDark ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
+              </Button>
+            </div>
+            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center gap-2">
+              <div className="flex h-28 w-28 items-center justify-center">
+                <Image src="/fanap.png" alt="لوگو فناپ" width={96} height={96} className="h-24 w-24 object-contain" />
               </div>
-              <div className="absolute left-4 top-1/2 -translate-y-1/2">
-                <Button
-                  size="icon"
-                  variant="outline"
-                  onClick={() => setTheme(isDark ? "light" : "dark")}
-                  aria-label={isDark ? "تغییر به تم روشن" : "تغییر به تم تیره"}
-                >
-                  {isDark ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
-                </Button>
-              </div>
-              <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center gap-2">
-                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
-                  <Factory className="h-4 w-4 text-primary-foreground" />
-                </div>
-                <span className="text-sm font-semibold">سامانه توقفات</span>
-              </div>
-            </>
-          )}
+              <span className="text-sm font-semibold">سامانه توقفات</span>
+            </div>
+          </>
         </div>
       </div>
       <main className="min-h-screen lg:mr-64 pt-4 lg:pt-0">

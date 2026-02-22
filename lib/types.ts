@@ -1,4 +1,11 @@
 export type UserRole = "operator" | "supervisor" | "inspector" | "admin"
+export type Permission =
+  | "dashboard:read"
+  | "stoppages:create"
+  | "stoppages:approve"
+  | "reports:read"
+  | "settings:manage"
+  | "users:manage"
 
 export interface User {
   id: string
@@ -6,6 +13,10 @@ export interface User {
   username: string
   role: UserRole
   unit: string
+}
+
+export interface AuthUser extends User {
+  permissions: Permission[]
 }
 
 export type StoppageStatus = "pending_supervisor" | "pending_inspector" | "approved" | "rejected"

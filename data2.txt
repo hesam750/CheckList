@@ -1,0 +1,126 @@
+10:51:49.710 Running build in Washington, D.C., USA (East) – iad1
+10:51:49.710 Build machine configuration: 2 cores, 8 GB
+10:51:49.722 Cloning github.com/hesam750/MTBF-MTTR (Branch: main, Commit: 928e4cc)
+10:51:49.723 Skipping build cache, deployment was triggered without cache.
+10:51:50.154 Cloning completed: 431.000ms
+10:51:52.114 Running "vercel build"
+10:51:52.746 Vercel CLI 50.22.0
+10:51:53.391 Installing dependencies...
+10:52:06.536 
+10:52:06.537 added 272 packages in 13s
+10:52:06.538 
+10:52:06.538 40 packages are looking for funding
+10:52:06.538   run `npm fund` for details
+10:52:06.606 Detected Next.js version: 16.1.6
+10:52:06.611 Running "npm run build"
+10:52:06.711 
+10:52:06.711 > my-project@0.1.0 build
+10:52:06.711 > next build
+10:52:06.712 
+10:52:07.341 Attention: Next.js now collects completely anonymous telemetry regarding usage.
+10:52:07.342 This information is used to shape Next.js' roadmap and prioritize features.
+10:52:07.343 You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+10:52:07.343 https://nextjs.org/telemetry
+10:52:07.344 
+10:52:07.357 ▲ Next.js 16.1.6 (Turbopack)
+10:52:07.358 
+10:52:07.367 ⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+10:52:07.392   Creating an optimized production build ...
+10:52:21.883 
+10:52:21.883 > Build error occurred
+10:52:21.888 Error: Turbopack build failed with 4 errors:
+10:52:21.888 ./lib/auth.ts:1:1
+10:52:21.888 Module not found: Can't resolve 'jose'
+10:52:21.888 [0m[31m[1m>[22m[39m[90m 1 |[39m [36mimport[39m { [33mSignJWT[39m[33m,[39m jwtVerify } [36mfrom[39m [32m"jose"[39m
+10:52:21.889  [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+10:52:21.890  [90m 2 |[39m [36mimport[39m type { [33mAuthUser[39m } [36mfrom[39m [32m"@/lib/types"[39m
+10:52:21.890  [90m 3 |[39m
+10:52:21.891  [90m 4 |[39m [36mconst[39m [33mACCESS_TOKEN_TTL[39m [33m=[39m [35m60[39m [33m*[39m [35m15[39m[0m
+10:52:21.891 
+10:52:21.891 
+10:52:21.891 
+10:52:21.891 Import traces:
+10:52:21.891   App Route:
+10:52:21.891     ./lib/auth.ts
+10:52:21.891     ./app/api/auth/login/route.ts
+10:52:21.892 
+10:52:21.892   Edge Middleware:
+10:52:21.892     ./lib/auth.ts
+10:52:21.892     ./middleware.ts
+10:52:21.892 
+10:52:21.892 https://nextjs.org/docs/messages/module-not-found
+10:52:21.893 
+10:52:21.893 
+10:52:21.893 ./lib/db.ts:1:1
+10:52:21.893 Module not found: Can't resolve 'pg'
+10:52:21.893 [0m[31m[1m>[22m[39m[90m 1 |[39m [36mimport[39m { [33mPool[39m } [36mfrom[39m [32m"pg"[39m
+10:52:21.894  [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+10:52:21.894  [90m 2 |[39m
+10:52:21.895  [90m 3 |[39m [36mconst[39m connectionString [33m=[39m process[33m.[39menv[33m.[39m[33mDATABASE_URL[39m
+10:52:21.895  [90m 4 |[39m[0m
+10:52:21.895 
+10:52:21.895 
+10:52:21.895 
+10:52:21.896 Import trace:
+10:52:21.896   App Route:
+10:52:21.896     ./lib/db.ts
+10:52:21.896     ./app/api/stoppages/route.ts
+10:52:21.896 
+10:52:21.896 https://nextjs.org/docs/messages/module-not-found
+10:52:21.896 
+10:52:21.896 
+10:52:21.897 ./app/settings/page.tsx:33:1
+10:52:21.897 Export mockUsers doesn't exist in target module
+10:52:21.897 [0m [90m 31 |[39m   [33mSelectValue[39m[33m,[39m
+10:52:21.897  [90m 32 |[39m } [36mfrom[39m [32m"@/components/ui/select"[39m
+10:52:21.898 [31m[1m>[22m[39m[90m 33 |[39m [36mimport[39m { units[33m,[39m mockUsers } [36mfrom[39m [32m"@/lib/mock-data"[39m
+10:52:21.898  [90m    |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+10:52:21.899  [90m 34 |[39m [36mimport[39m { [33mPlus[39m[33m,[39m [33mPencil[39m[33m,[39m [33mTrash2[39m[33m,[39m [33mBuilding2[39m[33m,[39m [33mGitBranch[39m[33m,[39m [33mCog[39m[33m,[39m [33mUsers[39m } [36mfrom[39m [32m"lucide-react"[39m
+10:52:21.899  [90m 35 |[39m
+10:52:21.900  [90m 36 |[39m [36mconst[39m roleLabels[33m:[39m [33mRecord[39m[33m<[39m[33mstring[39m[33m,[39m string[33m>[39m [33m=[39m {[0m
+10:52:21.900 
+10:52:21.900 The export mockUsers was not found in module [project]/lib/mock-data.ts [app-client] (ecmascript).
+10:52:21.900 Did you mean to import mockStoppages?
+10:52:21.901 All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+10:52:21.901 
+10:52:21.901 Import traces:
+10:52:21.901   Client Component Browser:
+10:52:21.901     ./app/settings/page.tsx [Client Component Browser]
+10:52:21.902     ./app/settings/page.tsx [Server Component]
+10:52:21.902 
+10:52:21.902   Client Component SSR:
+10:52:21.902     ./app/settings/page.tsx [Client Component SSR]
+10:52:21.903     ./app/settings/page.tsx [Server Component]
+10:52:21.903 
+10:52:21.903 
+10:52:21.903 ./app/settings/page.tsx:33:1
+10:52:21.903 Export mockUsers doesn't exist in target module
+10:52:21.904 [0m [90m 31 |[39m   [33mSelectValue[39m[33m,[39m
+10:52:21.904  [90m 32 |[39m } [36mfrom[39m [32m"@/components/ui/select"[39m
+10:52:21.904 [31m[1m>[22m[39m[90m 33 |[39m [36mimport[39m { units[33m,[39m mockUsers } [36mfrom[39m [32m"@/lib/mock-data"[39m
+10:52:21.906  [90m    |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+10:52:21.906  [90m 34 |[39m [36mimport[39m { [33mPlus[39m[33m,[39m [33mPencil[39m[33m,[39m [33mTrash2[39m[33m,[39m [33mBuilding2[39m[33m,[39m [33mGitBranch[39m[33m,[39m [33mCog[39m[33m,[39m [33mUsers[39m } [36mfrom[39m [32m"lucide-react"[39m
+10:52:21.906  [90m 35 |[39m
+10:52:21.906  [90m 36 |[39m [36mconst[39m roleLabels[33m:[39m [33mRecord[39m[33m<[39m[33mstring[39m[33m,[39m string[33m>[39m [33m=[39m {[0m
+10:52:21.907 
+10:52:21.907 The export mockUsers was not found in module [project]/lib/mock-data.ts [app-ssr] (ecmascript).
+10:52:21.907 Did you mean to import mockStoppages?
+10:52:21.907 All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+10:52:21.907 
+10:52:21.908 Import traces:
+10:52:21.908   Client Component Browser:
+10:52:21.908     ./app/settings/page.tsx [Client Component Browser]
+10:52:21.908     ./app/settings/page.tsx [Server Component]
+10:52:21.908 
+10:52:21.909   Client Component SSR:
+10:52:21.909     ./app/settings/page.tsx [Client Component SSR]
+10:52:21.909     ./app/settings/page.tsx [Server Component]
+10:52:21.909 
+10:52:21.909 
+10:52:21.910     at <unknown> (./lib/auth.ts:1:1)
+10:52:21.910     at <unknown> (https://nextjs.org/docs/messages/module-not-found)
+10:52:21.910     at <unknown> (./lib/db.ts:1:1)
+10:52:21.910     at <unknown> (https://nextjs.org/docs/messages/module-not-found)
+10:52:21.911     at <unknown> (./app/settings/page.tsx:33:1)
+10:52:21.911     at <unknown> (./app/settings/page.tsx:33:1)
+10:52:21.964 Error: Command "npm run build" exited with 1

@@ -1,8 +1,9 @@
 "use client"
 
 import { useState } from "react"
+import Image from "next/image"
 import { useRouter } from "next/navigation"
-import { Factory, Eye, EyeOff, Settings } from "lucide-react"
+import { Eye, EyeOff, Settings } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -12,10 +13,36 @@ export function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState("")
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault()
-    router.push("/dashboard")
+    setLoading(true)
+    setError("")
+    fetch("/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, password }),
+    })
+      .then(async (res) => {
+        if (!res.ok) {
+          throw new Error()
+        }
+        const data = await res.json().catch(() => null)
+        const role = data?.user?.role as string | undefined
+        if (role === "operator") {
+          router.push("/stoppages/new")
+          return
+        }
+        router.push("/dashboard")
+      })
+      .catch(() => {
+        setError("نام کاربری یا رمز عبور نادرست است")
+      })
+      .finally(() => {
+        setLoading(false)
+      })
   }
 
   return (
@@ -30,8 +57,8 @@ export function LoginPage() {
       <div className="relative w-full max-w-md mx-4">
         <div className="rounded-2xl border border-border bg-card/90 p-8 shadow-lg backdrop-blur">
           <div className="flex flex-col items-center mb-8">
-            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-primary mb-4">
-              <Factory className="h-8 w-8 text-primary-foreground" />
+            <div className="flex h-48 w-48 items-center justify-center mb-4">
+              <Image src="/fanap.png" alt="لوگو فناپ" width={160} height={160} className="h-40 w-40 object-contain" />
             </div>
             <h1 className="text-xl font-bold text-card-foreground text-balance text-center">سامانه مدیریت توقفات</h1>
             <p className="text-sm text-muted-foreground mt-1">ورود به سیستم مدیریت خطوط تولید</p>
@@ -45,6 +72,7 @@ export function LoginPage() {
                 placeholder="نام کاربری خود را وارد کنید"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
+                disabled={loading}
                 className="bg-secondary text-secondary-foreground placeholder:text-muted-foreground"
               />
             </div>
@@ -58,11 +86,13 @@ export function LoginPage() {
                   placeholder="رمز عبور خود را وارد کنید"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  disabled={loading}
                   className="pl-10 bg-secondary text-secondary-foreground placeholder:text-muted-foreground"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
+                  disabled={loading}
                   className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                 >
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -70,8 +100,13 @@ export function LoginPage() {
               </div>
             </div>
 
-            <Button type="submit" className="w-full bg-primary text-primary-foreground hover:bg-primary/90 h-11">
-              ورود به سیستم
+            {error ? <p className="text-xs text-destructive text-center">{error}</p> : null}
+            <Button
+              type="submit"
+              className="w-full bg-primary text-primary-foreground hover:bg-primary/90 h-11"
+              disabled={loading}
+            >
+              {loading ? "در حال ورود..." : "ورود به سیستم"}
             </Button>
           </form>
         </div>
